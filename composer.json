@@ -1,6 +1,6 @@
 {
     "name": "acpl/flarum-db-snapshots",
-    "description": "Quickly dump and load databases",
+    "description": "Create and restore database snapshots for Flarum via CLI",
     "type": "flarum-extension",
     "homepage": "https://github.com/android-com-pl/flarum-db-snapshots",
     "license": "MIT",
