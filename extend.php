@@ -1,6 +1,6 @@
 <?php
 
-namespace ACPL\FlarumDbDumper;
+namespace Acpl\FlarumDbSnapshots;
 
 use Flarum\Extend;
 

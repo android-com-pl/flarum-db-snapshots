@@ -1,4 +1,4 @@
-name: Flarum DB Dumper PHP
+name: Flarum DB Snapshots PHP
 
 on: [workflow_dispatch, push, pull_request]
 

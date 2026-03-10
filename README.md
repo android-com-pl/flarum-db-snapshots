@@ -7,7 +7,7 @@ Database backup extension for Flarum that allows dumping database content using 
 ## Installation
 
 ```sh
-composer require acpl/flarum-db-dumper
+composer require acpl/flarum-db-snapshots
 ```
 
 ## Usage

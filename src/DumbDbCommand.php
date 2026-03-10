@@ -1,8 +1,8 @@
 <?php
 
-namespace ACPL\FlarumDbDumper;
+namespace Acpl\FlarumDbSnapshots;
 
-use ACPL\FlarumDbDumper\Helper\Format;
+use Acpl\FlarumDbSnapshots\Helper\Format;
 use Carbon\Carbon;
 use Exception;
 use Flarum\Console\AbstractCommand;
