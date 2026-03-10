@@ -1,6 +1,6 @@
 <?php
 
-namespace Acpl\FlarumDbSnapshots\Helper;
+namespace Acpl\FlarumDbSnapshots\Helpers;
 
 class Format
 {

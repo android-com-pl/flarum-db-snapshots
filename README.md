@@ -1,8 +1,6 @@
-# Flarum Database Dumper
+# Flarum Database Snapshots
 
-[![Latest Stable Version](https://img.shields.io/packagist/v/acpl/flarum-db-dumper)](https://packagist.org/packages/acpl/flarum-db-dumper) [![Total Downloads](https://img.shields.io/packagist/dt/acpl/flarum-db-dumper.svg)](https://packagist.org/packages/acpl/flarum-db-dumper/stats) [![GitHub Sponsors](https://img.shields.io/badge/Donate-%E2%9D%A4-%23db61a2.svg?&logo=github&logoColor=white&labelColor=181717)](https://github.com/android-com-pl/flarum-db-dumper?sponsor=1)
-
-Database backup extension for Flarum that allows dumping database content using the `db:dump` command.
+[![Latest Stable Version](https://img.shields.io/packagist/v/acpl/flarum-db-snapshots)](https://packagist.org/packages/acpl/flarum-db-snapshots) [![Total Downloads](https://img.shields.io/packagist/dt/acpl/flarum-db-snapshots.svg)](https://packagist.org/packages/acpl/flarum-db-snapshots/stats) [![GitHub Sponsors](https://img.shields.io/badge/Donate-%E2%9D%A4-%23db61a2.svg?&logo=github&logoColor=white&labelColor=181717)](https://github.com/android-com-pl/flarum-db-snapshots?sponsor=1)
 
 ## Installation
 
@@ -10,23 +8,23 @@ Database backup extension for Flarum that allows dumping database content using 
 composer require acpl/flarum-db-snapshots
 ```
 
-## Usage
+## Create Snapshot
 
 Basic usage:
 ```sh
-# Dump to storage/dumps/dump-YYYY-MM-DD-HHMMSS.sql
-php flarum db:dump
+# Dump to storage/snapshots/snapshot-Y-m-d-His.sql
+php flarum snapshot:create
 
 # Dump to specific path/file
-php flarum db:dump /path/to/backup.sql
-php flarum db:dump ../backups/forum.sql
+php flarum snapshot:create /path/to/backup.sql
+php flarum snapshot:create ../backups/forum.sql
 
 # Dump with compression (based on extension)
-php flarum db:dump /backups/dump.sql.gz   # gzip compression
-php flarum db:dump /backups/dump.sql.bz2  # bzip2 compression
+php flarum snapshot:create /backups/dump.sql.gz   # gzip compression
+php flarum snapshot:create /backups/dump.sql.bz2  # bzip2 compression
 
 # Create backup on live site without locking tables
-php flarum db:dump --single-transaction --quick --lock-tables=false
+php flarum snapshot:create --single-transaction --quick --lock-tables=false
 ```
 
 ### Options
@@ -42,6 +40,10 @@ php flarum db:dump --single-transaction --quick --lock-tables=false
 
 Additionally, most of the standard mysqldump options are supported (like `--single-transaction`, `--quick`, `--lock-tables`, etc).
 Check mysqldump documentation for available options.
+
+## Load Snapshot
+
+🚧 
 
 ## Requirements
 

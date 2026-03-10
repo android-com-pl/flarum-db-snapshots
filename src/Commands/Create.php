@@ -1,8 +1,8 @@
 <?php
 
-namespace Acpl\FlarumDbSnapshots;
+namespace Acpl\FlarumDbSnapshots\Commands;
 
-use Acpl\FlarumDbSnapshots\Helper\Format;
+use Acpl\FlarumDbSnapshots\Helpers\Format;
 use Carbon\Carbon;
 use Exception;
 use Flarum\Console\AbstractCommand;
@@ -12,7 +12,7 @@ use Spatie\DbDumper\Databases\MySql;
 use Spatie\DbDumper\Exceptions\CannotSetParameter;
 use Symfony\Component\Console\Input\{InputArgument, InputOption};
 
-class DumbDbCommand extends AbstractCommand
+class Create extends AbstractCommand
 {
     private const COMPRESSORS = [
         'gz' => GzipCompressor::class,
@@ -98,18 +98,17 @@ class DumbDbCommand extends AbstractCommand
 
     public function __construct(protected Config $config, protected Paths $paths)
     {
-        parent::__construct();
+        parent::__construct('snapshot:create');
     }
 
     protected function configure(): void
     {
         $command = $this
-            ->setName('db:dump')
-            ->setDescription('Dump the contents of a database')
+            ->setDescription('Create a snapshot of the database')
             ->addArgument(
                 'path',
                 InputArgument::OPTIONAL,
-                'Path where to store the dump file',
+                'Path where to store the snapshot file',
             )
             ->addOption(
                 'compress',
@@ -121,19 +120,19 @@ class DumbDbCommand extends AbstractCommand
                 'binary-path',
                 null,
                 InputOption::VALUE_REQUIRED,
-                'Custom location for the mysqldump binary',
+                'Custom location for the mysqldump / mariadb-dump binary',
             )
             ->addOption(
                 'include-tables',
                 null,
                 InputOption::VALUE_REQUIRED,
-                'Comma separated list of tables to include in the dump',
+                'Comma separated list of tables to include in the snapshot',
             )
             ->addOption(
                 'exclude-tables',
                 null,
                 InputOption::VALUE_REQUIRED,
-                'Comma separated list of tables to exclude from the dump',
+                'Comma separated list of tables to exclude from the snapshot',
             )
             ->addOption(
                 'skip-structure',
@@ -145,19 +144,19 @@ class DumbDbCommand extends AbstractCommand
                 'no-data',
                 null,
                 InputOption::VALUE_NONE,
-                'Do not write row data',
+                'Do not write row data into the snapshot',
             )
             ->addOption(
                 'skip-auto-increment',
                 null,
                 InputOption::VALUE_NONE,
-                'Skip AUTO_INCREMENT values from the dump',
+                'Skip AUTO_INCREMENT values from the snapshot',
             )
             ->addOption(
                 'no-column-statistics',
                 null,
                 InputOption::VALUE_NONE,
-                'Do not use column statistics (for MySQL 8 compatibility with older versions)',
+                'Do not use column statistics (for MySQL 8 compatibility)',
             );
 
         foreach (self::ALLOWED_MYSQLDUMP_OPTIONS as $option) {
@@ -165,7 +164,7 @@ class DumbDbCommand extends AbstractCommand
                 $option,
                 null,
                 InputOption::VALUE_OPTIONAL,
-                "Pass --$option to mysqldump",
+                "Pass --$option to mysqldump / mariadb-dump",
             );
         }
     }
@@ -185,7 +184,7 @@ class DumbDbCommand extends AbstractCommand
 
         $path = $this->input->getArgument('path');
         if (empty($path)) {
-            $path = $this->paths->storage.'/dumps/dump-'.Carbon::now()->format('Y-m-d-His').'.sql';
+            $path = $this->paths->storage.'/snapshots/snapshot-'.Carbon::now()->format('Y-m-d-His').'.sql';
         }
 
         $compression = $this->input->getOption('compress');
@@ -251,9 +250,9 @@ class DumbDbCommand extends AbstractCommand
             $dumper->dumpToFile($path);
             $fullPath = realpath($path);
             $filesize = Format::humanReadableSize(filesize($fullPath));
-            $this->info("Database dumped successfully to: $fullPath ($filesize)");
+            $this->info("Snapshot created successfully to: $fullPath ($filesize)");
         } catch (Exception $e) {
-            $this->error('Failed to dump database: '.$e->getMessage());
+            $this->error('Failed to create snapshot: '.$e->getMessage());
 
             return 1;
         }
