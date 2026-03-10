@@ -72,3 +72,4 @@ php flarum snapshot:load /path/to/backup.sql.bz2
 
 - [Packagist](https://packagist.org/packages/acpl/flarum-db-snapshots)
 - [GitHub](https://github.com/android-com-pl/flarum-db-snapshots)
+- [Discuss](https://discuss.flarum.org/d/38880-flarum-database-snapshots)
