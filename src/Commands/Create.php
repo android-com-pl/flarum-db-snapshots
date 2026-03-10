@@ -120,7 +120,7 @@ class Create extends AbstractCommand
                 'binary-path',
                 null,
                 InputOption::VALUE_REQUIRED,
-                'Custom location for the mysqldump / mariadb-dump binary',
+                'Custom location for the mysqldump binary',
             )
             ->addOption(
                 'include-tables',
@@ -164,7 +164,7 @@ class Create extends AbstractCommand
                 $option,
                 null,
                 InputOption::VALUE_OPTIONAL,
-                "Pass --$option to mysqldump / mariadb-dump",
+                "Pass --$option to mysqldump",
             );
         }
     }
