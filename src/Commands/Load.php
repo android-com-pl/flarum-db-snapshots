@@ -23,16 +23,21 @@ class Load extends AbstractCommand
             ->setDescription('Load a database dump')
             ->addArgument('path', InputArgument::REQUIRED, 'Path to the SQL dump file')
             ->addOption('drop-tables', null, InputOption::VALUE_NONE, 'Drop all existing tables before loading')
-            ->addOption('binary-path', null, InputOption::VALUE_REQUIRED,
+            ->addOption(
+                'binary-path',
+                null,
+                InputOption::VALUE_REQUIRED,
                 'Custom location for the mysql binary',
-                'mysql');
+                'mysql'
+            );
     }
 
     protected function fire(): int
     {
         $path = $this->input->getArgument('path');
-        if (!is_readable($path)) {
+        if (! is_readable($path)) {
             $this->error("File not found or is not readable: $path");
+
             return 1;
         }
 
@@ -48,8 +53,9 @@ class Load extends AbstractCommand
             $this->info('Database restored successfully.');
         } catch (Exception $e) {
             $this->error('Failed to restore database: '.$e->getMessage());
+
             return 1;
-        };
+        }
 
         return 0;
     }
