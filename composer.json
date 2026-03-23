@@ -23,9 +23,12 @@
         }
     ],
     "require": {
-        "php": "^8.1",
-        "flarum/core": "^v1.8.14",
-        "spatie/db-dumper": "^3.8.3"
+        "php": "^8.3",
+        "flarum/core": "^v2.0.0-beta.8",
+        "spatie/db-dumper": "^4.1.0"
+    },
+    "require-dev": {
+        "flarum/phpstan": "^2.0@beta"
     },
     "autoload": {
         "psr-4": {
@@ -60,9 +63,12 @@
             }
         }
     },
-    "minimum-stability": "dev",
+    "minimum-stability": "beta",
     "prefer-stable": true,
     "config": {
         "sort-packages": true
+    },
+    "scripts": {
+        "analyse:phpstan": "phpstan analyse"
     }
 }
