@@ -14,6 +14,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
+use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Process\Process;
 
@@ -30,6 +31,7 @@ class Load extends AbstractCommand
             ->setDescription('Load a database dump')
             ->addArgument('path', InputArgument::REQUIRED, 'Path to the SQL dump file')
             ->addOption('drop-tables', null, InputOption::VALUE_NONE, 'Drop all existing tables before loading')
+            ->addOption('force', 'f', InputOption::VALUE_NONE, 'Force drop tables without confirmation')
             ->addOption(
                 'binary-path',
                 null,
@@ -84,6 +86,27 @@ class Load extends AbstractCommand
         }
 
         if ($this->input->getOption('drop-tables')) {
+            if (! $this->input->getOption('force')) {
+                if (! $this->input->isInteractive()) {
+                    $this->error('The --drop-tables option requires the --force flag in non-interactive mode.');
+
+                    return self::FAILURE;
+                }
+
+                /** @var QuestionHelper $helper */
+                $helper = $this->getHelper('question');
+                $question = new ConfirmationQuestion(
+                    '<error> WARNING! </error> You are about to drop ALL tables in the database.'.PHP_EOL.'Are you sure you want to proceed? (y/N) ',
+                    false
+                );
+
+                if (! $helper->ask($this->input, $this->output, $question)) {
+                    $this->info('Operation aborted by the user.');
+
+                    return self::SUCCESS;
+                }
+            }
+
             $this->info('Dropping all existing tables...');
             $this->db->getSchemaBuilder()->dropAllTables();
         }
