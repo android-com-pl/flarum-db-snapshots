@@ -41,7 +41,7 @@ class Load extends AbstractCommand
 
     protected function interact(InputInterface $input, OutputInterface $output): void
     {
-        if (!empty($input->getArgument('path'))) {
+        if (! empty($input->getArgument('path'))) {
             return;
         }
 
@@ -56,10 +56,11 @@ class Load extends AbstractCommand
                 $output,
                 new Question("No snapshots were found in $snapshotsDir. Please specify a snapshot path: ")
             ));
+
             return;
         }
 
-        usort($paths, fn($a, $b) => -(filemtime($a) <=> filemtime($b)));
+        usort($paths, fn ($a, $b) => -(filemtime($a) <=> filemtime($b)));
 
         $file = $helper->ask(
             $input,
@@ -69,14 +70,14 @@ class Load extends AbstractCommand
 
         $input->setArgument(
             'path',
-            Arr::first($paths, fn($path) => str_ends_with($path, $file))
+            Arr::first($paths, fn ($path) => str_ends_with($path, $file))
         );
     }
 
     protected function fire(): int
     {
         $path = $this->input->getArgument('path');
-        if (!is_readable($path)) {
+        if (! is_readable($path)) {
             $this->error("File not found or is not readable: $path");
 
             return self::FAILURE;
