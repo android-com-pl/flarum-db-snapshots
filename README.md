@@ -62,6 +62,7 @@ php flarum snapshot:load /path/to/backup.sql.bz2
 ### Options for Loading
 
 - `--drop-tables`: Drop all existing tables before loading the snapshot. Useful when restoring a full backup into an existing database to avoid conflicts.
+- `--force`, `-f`: Bypass the confirmation prompt when using `--drop-tables`.
 - `--binary-path=/path/to/binary`: Custom path to the `mysql` binary.
 
 ## Requirements
