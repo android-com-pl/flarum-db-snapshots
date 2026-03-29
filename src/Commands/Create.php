@@ -165,6 +165,7 @@ class Create extends AbstractCommand
                 null,
                 InputOption::VALUE_OPTIONAL,
                 "Pass --$option to mysqldump",
+                false
             );
         }
     }
@@ -244,8 +245,9 @@ class Create extends AbstractCommand
 
         foreach (self::ALLOWED_MYSQLDUMP_OPTIONS as $option) {
             $value = $this->input->getOption($option);
-            if ($value !== null) {
-                if ($value === true || $value === '') {
+            // Option states: false (missing), null (flag only), string (with value)
+            if ($value !== false) {
+                if ($value === null || $value === '') {
                     $dumper->addExtraOption("--$option");
                 } else {
                     $dumper->addExtraOption("--$option=".$value);
