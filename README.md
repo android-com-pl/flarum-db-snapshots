@@ -18,6 +18,8 @@ Basic usage:
 ```sh
 # Dump to storage/snapshots/snapshot-Y-m-d-His.sql
 php flarum snapshot:create
+# Dump to storage/snapshots/my-snapshot.sql
+php flarum snapshot:create my-snapshot.sql
 
 # Dump to a specific path/file
 php flarum snapshot:create /path/to/backup.sql
