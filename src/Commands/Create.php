@@ -182,9 +182,16 @@ class Create extends AbstractCommand
             ->setUserName($dbConfig['username'])
             ->setPassword($dbConfig['password']);
 
+        $snapshotsDir = $this->paths->storage.'/snapshots';
+        $timestamp = Carbon::now()->format('Y-m-d-His');
+
         $path = $this->input->getArgument('path');
         if (empty($path)) {
-            $path = $this->paths->storage.'/snapshots/snapshot-'.Carbon::now()->format('Y-m-d-His').'.sql';
+            $path = "$snapshotsDir/snapshot-$timestamp.sql";
+        } elseif (is_dir($path) || str_ends_with($path, '/') || str_ends_with($path, '\\')) {
+            $path = rtrim($path, '/\\')."/snapshot-$timestamp.sql";
+        } elseif ($path === basename($path)) {
+            $path = "$snapshotsDir/$path";
         }
 
         $compression = $this->input->getOption('compress');
