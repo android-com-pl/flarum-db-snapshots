@@ -5,14 +5,21 @@ namespace Acpl\FlarumDbSnapshots\Commands;
 use Exception;
 use Flarum\Console\AbstractCommand;
 use Flarum\Foundation\Config;
+use Flarum\Foundation\Paths;
 use Illuminate\Database\ConnectionInterface;
+use Illuminate\Support\Arr;
+use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\ChoiceQuestion;
+use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Process\Process;
 
 class Load extends AbstractCommand
 {
-    public function __construct(protected ConnectionInterface $db, protected Config $config)
+    public function __construct(protected ConnectionInterface $db, protected Config $config, protected Paths $paths)
     {
         parent::__construct('snapshot:load');
     }
@@ -32,13 +39,47 @@ class Load extends AbstractCommand
             );
     }
 
+    protected function interact(InputInterface $input, OutputInterface $output): void
+    {
+        if (!empty($input->getArgument('path'))) {
+            return;
+        }
+
+        /** @var QuestionHelper $helper */
+        $helper = $this->getHelper('question');
+
+        $snapshotsDir = $this->paths->storage.'/snapshots';
+        $paths = glob("$snapshotsDir/*.{sql,gz,bz2}", GLOB_BRACE);
+        if (empty($paths)) {
+            $input->setArgument('path', $helper->ask(
+                $input,
+                $output,
+                new Question("No snapshots were found in $snapshotsDir. Please specify a snapshot path: ")
+            ));
+            return;
+        }
+
+        usort($paths, fn($a, $b) => -(filemtime($a) <=> filemtime($b)));
+
+        $file = $helper->ask(
+            $input,
+            $output,
+            new ChoiceQuestion('Select a snapshot to load:', array_map('basename', $paths))
+        );
+
+        $input->setArgument(
+            'path',
+            Arr::first($paths, fn($path) => str_ends_with($path, $file))
+        );
+    }
+
     protected function fire(): int
     {
         $path = $this->input->getArgument('path');
-        if (! is_readable($path)) {
+        if (!is_readable($path)) {
             $this->error("File not found or is not readable: $path");
 
-            return 1;
+            return self::FAILURE;
         }
 
         if ($this->input->getOption('drop-tables')) {
@@ -54,10 +95,10 @@ class Load extends AbstractCommand
         } catch (Exception $e) {
             $this->error('Failed to restore database: '.$e->getMessage());
 
-            return 1;
+            return self::FAILURE;
         }
 
-        return 0;
+        return self::SUCCESS;
     }
 
     protected function runImport(string $path): void
