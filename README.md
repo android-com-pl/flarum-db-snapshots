@@ -1,6 +1,6 @@
 # Flarum Database Snapshots
 
-[![Latest Stable Version](https://img.shields.io/packagist/v/acpl/flarum-db-snapshots)](https://packagist.org/packages/acpl/flarum-db-snapshots) [![Total Downloads](https://img.shields.io/packagist/dt/acpl/flarum-db-snapshots.svg)](https://packagist.org/packages/acpl/flarum-db-snapshots/stats) [![GitHub Sponsors](https://img.shields.io/badge/Donate-%E2%9D%A4-%23db61a2.svg?&logo=github&logoColor=white&labelColor=181717)](https://github.com/android-com-pl/flarum-db-snapshots?sponsor=1)
+[![Latest Stable Version](https://img.shields.io/packagist/v/acpl/flarum-db-snapshots)](https://packagist.org/packages/acpl/flarum-db-snapshots) [![Total Downloads](https://img.shields.io/packagist/dt/acpl/flarum-db-snapshots.svg)](https://packagist.org/packages/acpl/flarum-db-snapshots/stats) [![GitHub Sponsors](https://img.shields.io/badge/Support-%E2%9D%A4-%23db61a2.svg?&logo=github&logoColor=white&labelColor=181717)](https://github.com/android-com-pl/flarum-db-snapshots?sponsor=1)
 
 This extension provides commands to quickly create and restore database snapshots for Flarum.
 
@@ -52,9 +52,13 @@ Restore a database from an existing snapshot using the `snapshot:load` command.
 
 Basic usage:
 ```sh
+# Select a snapshot interactively from storage/snapshots
+php flarum snapshot:load
+# Load a specific snapshot from the default storage/snapshots directory
+php flarum snapshot:load my-snapshot.sql.gz
+
 # Restore from a standard SQL file
 php flarum snapshot:load /path/to/backup.sql
-
 # Restore directly from a compressed file (automatically decompressed on the fly)
 php flarum snapshot:load /path/to/backup.sql.gz
 php flarum snapshot:load /path/to/backup.sql.bz2

@@ -20,8 +20,11 @@ use Symfony\Component\Process\Process;
 
 class Load extends AbstractCommand
 {
+    protected readonly string $snapshotsDir;
+
     public function __construct(protected ConnectionInterface $db, protected Config $config, protected Paths $paths)
     {
+        $this->snapshotsDir = $this->paths->storage.'/snapshots';
         parent::__construct('snapshot:load');
     }
 
@@ -50,13 +53,12 @@ class Load extends AbstractCommand
         /** @var QuestionHelper $helper */
         $helper = $this->getHelper('question');
 
-        $snapshotsDir = $this->paths->storage.'/snapshots';
-        $paths = glob("$snapshotsDir/*.{sql,gz,bz2}", GLOB_BRACE);
+        $paths = glob("$this->snapshotsDir/*.{sql,gz,bz2}", GLOB_BRACE);
         if (empty($paths)) {
             $input->setArgument('path', $helper->ask(
                 $input,
                 $output,
-                new Question("No snapshots were found in $snapshotsDir. Please specify a snapshot path: ")
+                new Question("No snapshots were found in $this->snapshotsDir. Please specify a snapshot path: ")
             ));
 
             return;
@@ -79,6 +81,11 @@ class Load extends AbstractCommand
     protected function fire(): int
     {
         $path = $this->input->getArgument('path');
+
+        if ($path === basename($path)) {
+            $path = "$this->snapshotsDir/$path";
+        }
+
         if (! is_readable($path)) {
             $this->error("File not found or is not readable: $path");
 
