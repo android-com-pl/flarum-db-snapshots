@@ -39,8 +39,7 @@ class Load extends AbstractCommand
                 'binary-path',
                 null,
                 InputOption::VALUE_REQUIRED,
-                'Custom location for the mysql binary',
-                'mysql'
+                'Custom path to the mysql or mariadb binary'
             );
     }
 
@@ -135,7 +134,7 @@ class Load extends AbstractCommand
     protected function runImport(string $path): void
     {
         $dbConfig = $this->config['database'];
-        $mysqlBinary = $this->input->getOption('binary-path');
+        $mysqlBinary = $this->input->getOption('binary-path') ?? $dbConfig['driver'];
 
         $baseCommand = sprintf(
             '%s --host=%s --port=%s --user=%s --password=%s %s',

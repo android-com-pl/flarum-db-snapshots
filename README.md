@@ -42,7 +42,7 @@ php flarum snapshot:create --single-transaction --quick --lock-tables=false
 - `--no-data`: Dump schema only, without row data.
 - `--skip-auto-increment`: Skip `AUTO_INCREMENT` values.
 - `--no-column-statistics`: Disable column statistics.
-- `--binary-path=/path/to/binary`: Custom path to the `mysqldump` binary.
+- `--binary-path=/path/to/binary`: Custom directory containing the `mysqldump` or `mariadb-dump` binary.
 
 Most standard `mysqldump` options are also supported, such as `--single-transaction`, `--quick`, and `--lock-tables`. See the [mysqldump documentation](https://dev.mysql.com/doc/refman/8.4/en/mysqldump.html) for details.
 
@@ -67,11 +67,14 @@ php flarum snapshot:load /path/to/backup.sql.bz2
 
 - `--drop-tables`: Drop all existing tables before loading the snapshot. Useful when restoring a full backup into an existing database to avoid conflicts.
 - `--force`, `-f`: Bypass the confirmation prompt when using `--drop-tables`.
-- `--binary-path=/path/to/binary`: Custom path to the `mysql` binary.
+- `--binary-path=/path/to/binary`: Custom path to the `mysql` or `mariadb` binary.
 
 ## Requirements
 
-- `mysql` and `mysqldump` binaries
+PostgreSQL and SQLite are not yet supported.
+
+- MySQL: `mysql` and `mysqldump` binaries
+- MariaDB: `mariadb` and `mariadb-dump` binaries
 - `gzip` for `.gz` snapshots
 - `bzip2` for `.bz2` snapshots
 

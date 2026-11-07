@@ -25,7 +25,7 @@
     "require": {
         "php": "^8.3",
         "flarum/core": "^v2.0",
-        "spatie/db-dumper": "^4.1.0"
+        "spatie/db-dumper": "^4.1.1"
     },
     "require-dev": {
         "flarum/phpstan": "^2.0"
@@ -43,7 +43,11 @@
                 "name": "fas fa-database",
                 "backgroundColor": "#00dc51",
                 "color": "#15161E"
-            }
+            },
+            "database-support": [
+                "mysql",
+                "mariadb"
+            ]
         },
         "flarum-cli": {
             "modules": {

@@ -8,7 +8,7 @@ use Exception;
 use Flarum\Console\AbstractCommand;
 use Flarum\Foundation\{Config, Paths};
 use Spatie\DbDumper\Compressors\{Bzip2Compressor, GzipCompressor};
-use Spatie\DbDumper\Databases\MySql;
+use Spatie\DbDumper\Databases\{MariaDb, MySql};
 use Spatie\DbDumper\Exceptions\CannotSetParameter;
 use Symfony\Component\Console\Input\{InputArgument, InputOption};
 
@@ -120,7 +120,7 @@ class Create extends AbstractCommand
                 'binary-path',
                 null,
                 InputOption::VALUE_REQUIRED,
-                'Custom location for the mysqldump binary',
+                'Custom location for the mysqldump or mariadb-dump binary',
             )
             ->addOption(
                 'include-tables',
@@ -164,7 +164,7 @@ class Create extends AbstractCommand
                 $option,
                 null,
                 InputOption::VALUE_OPTIONAL,
-                "Pass --$option to mysqldump",
+                "Pass --$option to mysqldump or mariadb-dump",
                 false
             );
         }
@@ -176,7 +176,7 @@ class Create extends AbstractCommand
     protected function fire(): int
     {
         $dbConfig = $this->config['database'];
-        $dumper = MySql::create()
+        $dumper = ($dbConfig['driver'] === 'mariadb' ? MariaDb::create() : MySql::create())
             ->setHost($dbConfig['host'])
             ->setDbName($dbConfig['database'])
             ->setPort($dbConfig['port'] ?? 3306)
