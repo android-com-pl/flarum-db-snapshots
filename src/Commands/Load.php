@@ -132,31 +132,50 @@ class Load extends AbstractCommand
         return self::SUCCESS;
     }
 
+    /**
+     * @throws Exception
+     */
     protected function runImport(string $path): void
     {
         $dbConfig = $this->config['database'];
         $mysqlBinary = $this->input->getOption('binary-path');
 
-        $baseCommand = sprintf(
-            '%s --host=%s --port=%s --user=%s --password=%s %s',
-            escapeshellarg($mysqlBinary),
-            escapeshellarg($dbConfig['host']),
-            escapeshellarg((string) ($dbConfig['port'] ?? 3306)),
-            escapeshellarg($dbConfig['username']),
-            escapeshellarg((string) $dbConfig['password']),
-            escapeshellarg($dbConfig['database']),
-        );
+        $credentials = tmpfile();
+        if ($credentials === false) {
+            throw new Exception('Unable to create a temporary credentials file.');
+        }
 
-        $extension = strtolower(pathinfo($path, PATHINFO_EXTENSION));
-        $escapedPath = escapeshellarg($path);
+        try {
+            // Escape special characters for quoted option values.
+            $user = addcslashes($dbConfig['username'], "\\\"\n\r\t\x08");
+            $password = addcslashes((string) $dbConfig['password'], "\\\"\n\r\t\x08");
+            $contents = "[client]\nuser=\"$user\"\npassword=\"$password\"\n";
+            if (fwrite($credentials, $contents) !== strlen($contents) || ! fflush($credentials)) {
+                throw new Exception('Unable to write the temporary credentials file.');
+            }
 
-        $fullCommand = match ($extension) {
-            'gz' => "gzip -dc $escapedPath | $baseCommand",
-            'bz2' => "bzip2 -dc $escapedPath | $baseCommand",
-            default => "$baseCommand < $escapedPath",
-        };
+            $baseCommand = sprintf(
+                '%s --defaults-extra-file=%s --host=%s --port=%s %s',
+                escapeshellarg($mysqlBinary),
+                escapeshellarg(stream_get_meta_data($credentials)['uri']),
+                escapeshellarg($dbConfig['host']),
+                escapeshellarg((string) ($dbConfig['port'] ?? 3306)),
+                escapeshellarg($dbConfig['database']),
+            );
 
-        Process::fromShellCommandline($fullCommand, null, null, null, null)
-            ->mustRun();
+            $extension = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+            $escapedPath = escapeshellarg($path);
+
+            $fullCommand = match ($extension) {
+                'gz' => "gzip -dc $escapedPath | $baseCommand",
+                'bz2' => "bzip2 -dc $escapedPath | $baseCommand",
+                default => "$baseCommand < $escapedPath",
+            };
+
+            Process::fromShellCommandline($fullCommand, null, null, null, null)
+                ->mustRun();
+        } finally {
+            fclose($credentials);
+        }
     }
 }
